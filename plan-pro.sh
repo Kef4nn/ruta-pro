@@ -1,5 +1,5 @@
 #!/bin/bash
-# Recordatorio diario del plan profesional (5-7 AM L-V + ejercicio 7-8 AM L-S, domingo 7-11 AM). Uso: plan-pro.sh   (HOY=AAAA-MM-DD DRY=1 para probar)
+# Recordatorio diario del plan profesional (5-7 AM L-V, domingo 7-11 AM). Uso: plan-pro.sh   (HOY=AAAA-MM-DD DRY=1 para probar)
 set -euo pipefail
 DIR="$(dirname "$0")"
 HOY="${HOY:-$(TZ=America/Santo_Domingo date +%F)}"
@@ -22,27 +22,11 @@ case $DOW in
 🇺🇸 6:30-7:00: graba 2 min explicando en inglés el tema de la semana" ;;
 5) M="Viernes 🇺🇸 5-6 AM: conversación de 30 min en inglés (voz con IA o Tandem) + repasa tus errores
 6-7 AM: escribe y publica tu post semanal de LinkedIn" ;;
-6) M="Sábado: solo ejercicio, el resto del día es de la familia" ;;
+6) exit 0 ;;
 7) M="Bloque de proyecto (7-11 AM): $DOM. Al terminar, súbelo a GitHub y marca la semana como hecha" ;;
-esac
-# ejercicio 7-8 AM L-S, en casa sin equipo; sube cada 8 semanas
-if   [ "$SEM" -le 8 ];  then R="3 rondas x 10 reps"; C="caminata rápida 40 min"
-elif [ "$SEM" -le 16 ]; then R="4 rondas x 12-15 reps"; C="intervalos: 2 min trote + 1 min caminar, 40 min"
-else                         R="5 rondas x 15-20 reps"; C="trote continuo 30-40 min"; fi
-case $DOW in
-1) E="Tren superior ($R): flexiones, fondos en silla, remo bajo la mesa, pike push-ups, plancha 40 s" ;;
-2|5) E="Piernas y core ($R): sentadillas, zancadas, puente de glúteos, elevación de talones, plancha lateral 30 s" ;;
-3) E="Cardio: $C" ;;
-4) E="Cuerpo completo ($R): burpees, sentadillas, flexiones, mountain climbers, superman" ;;
-6) E="Cardio largo: $C" ;;
-*) E="" ;;
 esac
 TXT="📈 Plan pro - semana $SEM de 24
 $M"
-[ -n "$E" ] && TXT="$TXT
-💪 7-8 AM: 10 min calentamiento + $E + 10 min estirar"
-case "$SEM-$DOW" in 1-6|8-6|16-6|24-6) TXT="$TXT
-📏 Test: máximo de flexiones seguidas y de sentadillas en 1 min. Anótalo en Obsidian" ;; esac
-[ "$REC" != "-" ] && [ "$DOW" != 5 ] && [ "$DOW" != 6 ] && TXT="$TXT
+[ "$REC" != "-" ] && [ "$DOW" != 5 ] && TXT="$TXT
 Recurso: $REC"
 if [ "${DRY:-}" = 1 ]; then echo "$TXT"; else exec "$HOME/bin/wa-yo.sh" "$TXT"; fi
