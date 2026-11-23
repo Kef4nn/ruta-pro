@@ -7,6 +7,8 @@ DOW=$(date -d "$HOY" +%u)   # 1=lunes ... 7=domingo
 FILA=$(awk -F'\t' -v h="$HOY" '!/^#/ && $1<=h {f=$0} END{print f}' "$DIR/semanas.tsv")
 [ -n "$FILA" ] || exit 0
 IFS=$'\t' read -r INI SEM TEMA DOM REC <<<"$FILA"
+# el primer día del plan (martes 24/11) arranca con teoría, no con "lo de ayer"
+[ "$HOY" = "$INI" ] && [ "$SEM" = 1 ] && DOW=1
 # pasadas 7 días de la última semana, el plan terminó
 [ $(( ( $(date -d "$HOY" +%s) - $(date -d "$INI" +%s) ) / 86400 )) -lt 7 ] || exit 0
 case $DOW in

@@ -6,10 +6,10 @@ rows = [r for r in csv.reader(open(D / "semanas.tsv"), delimiter="\t") if r and 
 FASES = [(1, 6, "Base técnica", "Python, GitHub y AI-900"), (7, 11, "Proyecto insignia", "Agente de reclamaciones de seguros"),
          (12, 16, "Stack Microsoft", "Copilot Studio + certificación asociada"), (17, 24, "Consultor y arquitecto", "ROI, oferta Dorevio, proyecto 2, empleo remoto")]
 MES = "ene feb mar abr may jun jul ago sep oct nov dic".split()
-def rango(ini):
-    a = dt.date.fromisoformat(ini); b = a + dt.timedelta(days=6)
+def rango(ini, sig=None):
+    a = dt.date.fromisoformat(ini); b = dt.date.fromisoformat(sig) - dt.timedelta(days=1) if sig else a + dt.timedelta(days=6)
     return f"{a.day} {MES[a.month-1]} – {b.day} {MES[b.month-1]}"
-weeks = [dict(ini=r[0], n=int(r[1]), tema=r[2], dom=r[3], rec=r[4], rango=rango(r[0])) for r in rows]
+weeks = [dict(ini=r[0], n=int(r[1]), tema=r[2], dom=r[3], rec=r[4], rango=rango(r[0], rows[i+1][0] if i+1 < len(rows) else None)) for i, r in enumerate(rows)]
 assert len(weeks) == 24 and [w["n"] for w in weeks] == list(range(1, 25))
 logo = "data:image/webp;base64," + base64.b64encode(open("/home/kelrro/Proyectos/dorevio-automation/logo.webp", "rb").read()).decode()
 e = html.escape
@@ -104,18 +104,19 @@ const dow = new Date(hoyISO+"T12:00:00Z").getUTCDay() || 7;
 let cur = null; for (const w of W) if (w.ini <= hoyISO) cur = w;
 if (cur && dias(cur.ini, hoyISO) >= 7) cur = null;
 const K=document.getElementById("hoy-k"),T=document.getElementById("hoy-t"),P=document.getElementById("hoy-p"),M=document.getElementById("hoy-m");
-if (!cur && hoyISO < W[0].ini) {{ T.textContent="El plan arranca el martes 24 de noviembre a las 5 AM"; P.textContent=W[0].tema; }}
+if (!cur && hoyISO < W[0].ini) {{ K.textContent="Mañana empieza"; T.textContent="El plan arranca el martes 24 de noviembre a las 5 AM"; P.textContent=W[0].tema; }}
 else if (!cur) {{ T.textContent="Plan completado. Toca la revisión y el siguiente semestre."; }}
 else {{
   const ING={{1:"6:30–7:00 inglés: escucha un episodio de 6 Minute English (BBC) y anota 5 frases.",2:"6:30–7:00 inglés: graba 2 min explicando en inglés lo que practicaste.",3:"6:30–7:00 inglés: escucha 6 Minute English y repite en voz alta (shadowing).",4:"6:30–7:00 inglés: graba 2 min explicando el tema de la semana."}};
   const tareas={{1:["Teoría · 5–6:30 AM",cur.tema+" — "+ING[1]],2:["Práctica · 5–6:30 AM","Ejercicios de lo de ayer: "+cur.tema+" — "+ING[2]],3:["Teoría 2 · 5–6:30 AM",cur.tema+" — "+ING[3]],
     4:["Práctica 2 · 5–6:30 AM","Cierra el tema y prepara lo del domingo: "+cur.dom+" — "+ING[4]],5:["Inglés + LinkedIn · 5–7 AM","5–6: conversación en inglés de 30 min (voz con IA o un compañero de Tandem) + repaso de errores. 6–7: escribe y publica tu post semanal."],
     6:["Sábado","Día libre. Familia."],7:["Proyecto · 7–11 AM",cur.dom+". Súbelo a GitHub al terminar."]}};
-  K.textContent="Semana "+cur.n+" de 24 · Hoy"; T.textContent=tareas[dow][0]; P.textContent=tareas[dow][1];
+  const dt_=(cur.n===1&&hoyISO===cur.ini)?1:dow;
+  K.textContent="Semana "+cur.n+" de 24 · Hoy"; T.textContent=tareas[dt_][0]; P.textContent=tareas[dt_][1];
   M.textContent=cur.rec!=="-"?"Recurso: "+cur.rec:"";
   document.getElementById("s"+cur.n).classList.add("now");
   W.forEach(w=>{{ if (w.n<cur.n) document.getElementById("s"+w.n).classList.add("done"); }});
-  const pct=Math.min(100,Math.max(0,(dias(W[0].ini,hoyISO)+1)/168*100));
+  const pct=Math.min(100,Math.max(0,(dias(W[0].ini,hoyISO)+1)/(dias(W[0].ini,W[W.length-1].ini)+7)*100));
   requestAnimationFrame(()=>document.getElementById("prog").style.width=pct+"%");
   document.querySelectorAll(".fase").forEach(f=>{{ const a=+f.dataset.a,b=+f.dataset.b;
     const v = cur.n>b?100:cur.n<a?0:((cur.n-a)+dow/7)/(b-a+1)*100;
