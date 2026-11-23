@@ -13,11 +13,11 @@ weeks = [dict(ini=r[0], n=int(r[1]), tema=r[2], dom=r[3], rec=r[4], rango=rango(
 assert len(weeks) == 24 and [w["n"] for w in weeks] == list(range(1, 25))
 logo = "data:image/webp;base64," + base64.b64encode(open("/home/kelrro/Proyectos/dorevio-automation/logo.webp", "rb").read()).decode()
 e = html.escape
-RUTINA = [("Lun", "5–7 AM", "Teoría + 30 min inglés"), ("Mar", "5–7 AM", "Práctica + 30 min inglés"), ("Mié", "5–7 AM", "Teoría 2 + 30 min inglés"), ("Jue", "5–7 AM", "Práctica 2 + 30 min inglés"),
-          ("Vie", "5–7 AM", "1 h inglés + post LinkedIn"), ("Sáb", "Libre", "Familia"), ("Dom", "7–11 AM", "Proyecto → GitHub")]
+RUTINA = [("Lun", "5–8 AM", "Teoría + 30 min inglés + ejercicio"), ("Mar", "5–8 AM", "Práctica + 30 min inglés + ejercicio"), ("Mié", "5–8 AM", "Teoría 2 + 30 min inglés + cardio"), ("Jue", "5–8 AM", "Práctica 2 + 30 min inglés + ejercicio"),
+          ("Vie", "5–8 AM", "1 h inglés + post LinkedIn + ejercicio"), ("Sáb", "7–8 AM", "Cardio largo · resto familia"), ("Dom", "7–11 AM", "Proyecto → GitHub")]
 PRUEBAS = ["2 certificaciones oficiales de Microsoft (AI-900 + asociada)", "Certificado de inglés EF SET con nivel CEFR en LinkedIn", "~24 posts en LinkedIn, uno cada viernes",
            "GitHub activo cada domingo, con README en español e inglés", "2 casos de estudio con números reales",
-           "Perfil: Automatización RPA + Agentes de IA para seguros y finanzas"]
+           "Test físico en semanas 1, 8, 16 y 24: más flexiones y sentadillas cada vez", "Perfil: Automatización RPA + Agentes de IA para seguros y finanzas"]
 fase_de = lambda n: next(i for i, f in enumerate(FASES) if f[0] <= n <= f[1])
 
 # ---------- web ----------
@@ -94,7 +94,7 @@ a{{color:var(--green)}} a:focus-visible{{outline:2px solid var(--green);outline-
 <section><h2>Fases</h2><ul class="fases">{fases_html}</ul></section>
 <section><h2>Las 24 semanas</h2><ol class="ruta">{''.join(sem_html)}</ol></section>
 <section><h2>Lo que verán de ti en mayo</h2><ul class="pruebas">{''.join(f'<li>{e(p)}</li>' for p in PRUEBAS)}</ul></section>
-<footer>Inglés: 30 min de lunes a jueves (6:30–7:00) + 1 h el viernes. EF SET en las semanas 2, 12 y 23. Recordatorio diario por WhatsApp a las 4:50 AM (domingo 6:50 AM). Sábado y noches: familia.</footer>
+<footer>Inglés: 30 min de lunes a jueves (6:30–7:00) + 1 h el viernes. EF SET en las semanas 2, 12 y 23. Recordatorio diario por WhatsApp a las 4:50 AM (domingo 6:50 AM). Ejercicio 7–8 AM de lunes a sábado, en casa y sin equipo. Sábado (después de las 8) y noches: familia.</footer>
 </div>
 <script>
 const W = {json.dumps([{k: w[k] for k in ("ini","n","tema","dom","rec")} for w in weeks], ensure_ascii=False)};
@@ -155,7 +155,7 @@ footer{{margin-top:7px;display:flex;gap:10px;font-size:7.4pt}} footer div{{flex:
 <header><img src="{logo}" alt=""><div><h1>Ruta Pro <span>24 semanas</span></h1><p>24 nov 2026 → 9 may 2027 · Automatización RPA + Agentes de IA · Dorevio</p></div></header>
 <div class="rut">{''.join(f'<div class="{"x" if h=="Libre" else ("g" if d=="Dom" else "")}"><b>{d}</b>{h}<br>{e(t)}</div>' for d,h,t in RUTINA)}</div>
 <table>{''.join(filas)}</table>
-<footer><div><b>En mayo tendrás:</b> {e(" · ".join(PRUEBAS[:5]))}</div><div><b>Regla:</b> sábado y noches son de la familia. Si fallas un día, no lo recuperes de noche: sigue al día siguiente.</div></footer>
+<footer><div><b>En mayo tendrás:</b> {e(" · ".join(PRUEBAS[:6]))}</div><div><b>Regla:</b> sábado después del ejercicio y las noches son de la familia. Si fallas un día, no lo recuperes de noche: sigue al día siguiente.</div></footer>
 </body></html>"""
 (D / "puerta.html").write_text(puerta)
 print("ok", len(web), len(puerta))
